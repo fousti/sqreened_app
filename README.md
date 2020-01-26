@@ -2,6 +2,19 @@
 
 sqreened-app description
 
+## App Design
+
+- Configure targets via config file
+- Generic config for target: types of notification to dispatch, fields to include in the dispatch, message parser to dispatch
+- Specific config for target: files (log) http endpoint
+- Config structure : Handlers (email/slack/log/sms with specific config)
+- Config structure : formatter (fields to use for dispatch)
+- Config structure : dispatcher (message_types -> [(handlers, formatter),...])
+- Expose /webhooks endpoint
+- Check signature in middleware/pre-request hook
+- Given config, instantiate proper Taskbackend & delay_async
+
+
 ## Quick Start
 
 Run the application:

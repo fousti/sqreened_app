@@ -3,31 +3,36 @@ import logging.config
 
 from flask import Flask
 from werkzeug.utils import import_string
+import sqreen
 
+import sqreened_app.default_config
 from sqreened_app.views import hooks_bp
 
 CONFIG_NAME = {
-    'development': 'config.DevelopmentConfig',
-    'testing': 'config.TestingConfig',
+    'development': default_config.DevelopmentConfig,
+    'testing': default_config.TestingConfig,
+    'production': default_config.ProductionConfig
 }
-
-def get_config(config_name=None):
-    flask_config_name = os.getenv('FLASK_CONFIG', 'development')
-    if config_name is not None:
-        flask_config_name = config_name
-    return import_string(CONFIG_NAME[flask_config_name])
 
 def create_app(config_name=None, **kwargs):
     app = Flask(__name__, **kwargs)
 
-    try:
-        app.config.from_object(get_config(config_name))
-    except ImportError:
-        raise Exception('Invalid Config')
+    env = app.env
+    app.config.from_object(CONFIG_NAME[env])
+
+    if "FLASK_CONFIG" in os.environ:
+        app.config.from_envvar("FLASK_CONFIG")
+
+    print(app.config)
+    sqreen_token = os.getenv("SQREEN_TOKEN")
+    if sqreen_token and not "SQREEN_TOKEN" in app.config:
+        app.config["SQREEN_TOKEN"] = sqreen_token
 
     logging.config.dictConfig(app.config["LOGGING_CONFIG"])
 
     app.register_blueprint(hooks_bp)
+    sqreen.start()
+
     return app
 
 

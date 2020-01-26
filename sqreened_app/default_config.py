@@ -18,12 +18,18 @@ DEFAULT_LOGGING_CONFIG = {
 }
 
 class BaseConfig:
-    DEBUG=False
+    DEBUG = False
     PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
     LOGGING_CONFIG = DEFAULT_LOGGING_CONFIG
 
 class DevelopmentConfig(BaseConfig):
-    ENV='development'
     DEBUG = True
-    HOST = 'localhost'
+    HOST = "localhost"
     PORT = 5000
+
+class TestingConfig(BaseConfig):
+    TESTING = True
+    SQREEN_TOKEN = "1234"
+
+class ProductionConfig(BaseConfig):
+    pass
