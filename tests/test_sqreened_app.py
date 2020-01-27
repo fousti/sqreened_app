@@ -1,7 +1,7 @@
 import json
 
 
-def test_homepage(test_client, request_sig):
+def test_signature_req_OK(test_client, request_sig):
     body = {'data': 'test'}
     resp = test_client.post("/webhooks/",
                             json=body,
@@ -11,4 +11,9 @@ def test_homepage(test_client, request_sig):
     assert "data" in data
     assert data["data"] == "Welcome to Sqreened App!"
 
-
+def test_signature_req_NOK(test_client, request_sig):
+    body = {'data': 'test'}
+    resp = test_client.post("/webhooks/",
+                            json=body,
+                            headers={"X-Sqreen-Integrity": b"1234"})
+    assert resp.status_code == 401

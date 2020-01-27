@@ -3,3 +3,4 @@ sqreen
 pytest
 pytest-cov
 tox
+celery

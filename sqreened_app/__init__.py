@@ -3,10 +3,10 @@ import logging.config
 
 from flask import Flask
 from werkzeug.utils import import_string
+from celery import Celery
 import sqreen
 
 import sqreened_app.default_config
-from sqreened_app.views import hooks_bp
 
 CONFIG_NAME = {
     'development': default_config.DevelopmentConfig,
@@ -14,7 +14,8 @@ CONFIG_NAME = {
     'production': default_config.ProductionConfig
 }
 
-def create_app(config_name=None, **kwargs):
+
+def create_app(config_name=None, celery=None, **kwargs):
     app = Flask(__name__, **kwargs)
 
     env = app.env
@@ -30,9 +31,28 @@ def create_app(config_name=None, **kwargs):
 
     logging.config.dictConfig(app.config["LOGGING_CONFIG"])
 
+    if celery:
+        init_celery(celery, app)
+    from sqreened_app.views import hooks_bp
     app.register_blueprint(hooks_bp)
     sqreen.start()
 
     return app
 
+def make_celery(app_name=__name__):
+    backend = "redis://localhost:6379/0"
+    broker = backend.replace("0", "1")
+    return Celery(app_name, backend=backend, broker=broker)
 
+def init_celery(celery, app):
+    celery.conf.update(app.config)
+    TaskBase = celery.Task
+    class ContextTask(TaskBase):
+        abstract = True
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return TaskBase.__call__(self, *args, **kwargs)
+    celery.Task = ContextTask
+
+
+celery = make_celery()

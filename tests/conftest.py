@@ -24,7 +24,5 @@ def request_sig(test_client):
         sig = hmac.new(bytes(TestingConfig.SQREEN_TOKEN.encode()),
                        msg=bytes(data.encode()),
                        digestmod=hashlib.sha256).hexdigest()
-        print("SIG")
-        print(sig)
         return sig
     return make_req_sig
