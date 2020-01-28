@@ -11,6 +11,7 @@ setup(
         'flask>=1.1',
         'sqreen',
         'celery',
-        'requests'
+        'requests',
+        'redis'
     ],
 )

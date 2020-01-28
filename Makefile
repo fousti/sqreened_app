@@ -31,7 +31,7 @@ sdist: venv test
 	venv/bin/python setup.py sdist
 
 docker-cmd: deps
-	FLASK_APP=$(APP_NAME) SQREEN_APP_NAME=$(APP_NAME) FLASK_ENV=docker venv/bin/python main.py
+	FLASK_APP=$(APP_NAME) SQREEN_APP_NAME=$(APP_NAME) FLASK_ENV=docker python main.py
 
 docker-cmd-worker: deps
 	FLASK_ENV=docker celery worker -A celery_worker.celery --loglevel=debug --pool=solo

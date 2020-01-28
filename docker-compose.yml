@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  sqreened_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "5000:5000"
+    depends_on:
+      - redis
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: make docker-cmd-worker
+    depends_on:
+      - redis
+  redis:
+    image: redis:latest
+
