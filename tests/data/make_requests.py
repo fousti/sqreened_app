@@ -6,7 +6,7 @@ import requests
 
 
 def main():
-    with open("test_requests.json", "rb") as fd:
+    with open("notifications.json", "rb") as fd:
         byt = fd.read()
 
     sig = hmac.new(b"1234", msg=byt, digestmod=hashlib.sha256).hexdigest()

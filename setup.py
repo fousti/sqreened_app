@@ -10,6 +10,7 @@ setup(
     install_requires=[
         'flask>=1.1',
         'sqreen',
-        'celery'
+        'celery',
+        'requests'
     ],
 )

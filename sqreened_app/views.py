@@ -23,18 +23,17 @@ def check_signature():
     if not hmac.compare_digest(dig, sig):
         abort(401)
 
+    current_app.logger.debug("VALID SIG")
+
 @hooks_bp.route('/', methods=("POST",))
 def webhooks():
     dispatchers = current_app.config["DISPATCHERS"]
     body = request.get_json()
     if isinstance(body, list):
         for msg in body:
-            current_app.logger.info("Trigger dispatch for msg %s" % msg)
+            current_app.logger.debug("Trigger dispatch for msg %s" % msg)
             trigger_dispatchers(msg, dispatchers)
     else:
-        current_app.logger.info("Trigger dispatch for msg %s" % body)
+        current_app.logger.debug("Trigger dispatch for msg %s" % body)
         trigger_dispatchers(body, dispatchers)
     return 'Ok', 200
-
-
-

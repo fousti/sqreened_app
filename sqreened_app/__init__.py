@@ -11,6 +11,7 @@ import sqreened_app.default_config
 CONFIG_NAME = {
     'development': default_config.DevelopmentConfig,
     'testing': default_config.TestingConfig,
+    'docker': default_config.DockerConfig,
     'production': default_config.ProductionConfig
 }
 
@@ -40,12 +41,11 @@ def create_app(config_name=None, celery=None, **kwargs):
     return app
 
 def make_celery(app_name=__name__):
-    backend = "redis://localhost:6379/0"
-    broker = backend.replace("0", "1")
-    return Celery(app_name, backend=backend, broker=broker)
+    return Celery(__name__)
 
 def init_celery(celery, app):
     celery.conf.update(app.config)
+    celery.conf.broker_url = app.config["CELERY_BROKER_URL"]
     TaskBase = celery.Task
     class ContextTask(TaskBase):
         abstract = True

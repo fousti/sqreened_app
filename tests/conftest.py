@@ -1,5 +1,6 @@
 import hmac
 import hashlib
+import json
 
 import pytest
 
@@ -22,7 +23,17 @@ def test_client():
 def request_sig(test_client):
     def make_req_sig(data):
         sig = hmac.new(bytes(TestingConfig.SQREEN_TOKEN.encode()),
-                       msg=bytes(data.encode()),
+                       msg=data,
                        digestmod=hashlib.sha256).hexdigest()
         return sig
     return make_req_sig
+
+@pytest.fixture(scope="function")
+def request_body():
+    with open("tests/data/notifications.json", "rb") as fd:
+        data = fd.read()
+        return data
+
+@pytest.fixture(scope="session")
+def celery_config():
+    return {"broker_url": "memory://"}

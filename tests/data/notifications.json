@@ -30,4 +30,36 @@
       }
     ]
   }
+},
+{
+  "id": "5de51ae9f681245ab970ad67",
+  "message_type": "security_event",
+  "retry_count": 1,
+  "date_created": "2017-01-04T07:22:32.732000+00:00",
+  "message": {
+    "application_id": "587b23384891d57c1bf5bf4f",
+    "application_name": "Demo app",
+    "environment": "production",
+    "date_occurred": "2017-01-04T07:22:32.732000+00:00",
+    "event_category": "authentication",
+    "event_id": "587b234b4891d57c1bf5c766",
+    "event_kind": "auth_new_location",
+    "event_url": "https://my.sqreen.com/application/d8b47501fad44fb28d09967e1f1b09a258d85f4ba5d44e759b886f9663e7cf01/events/587b234b4891d57c1bf5c766",
+    "humanized_description": "Connection to tsanchez@yahoo.com from Sag, Romania",
+    "ips": [
+      {
+        "address": "84.185.129.221",
+        "date_resolved": "2017-01-15T07:22:51.494000+00:00",
+        "geo": {
+          "city": "Sag",
+          "code": "ROU",
+          "point": [
+            21.283300399780273,
+            46.04999923706055
+          ]
+        },
+        "is_tor": false
+      }
+    ]
+  }
 }]
