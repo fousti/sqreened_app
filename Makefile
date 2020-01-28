@@ -25,10 +25,11 @@ run: venv
 	FLASK_APP=$(APP_NAME) SQREEN_APP_NAME=$(APP_NAME) FLASK_ENV=development venv/bin/python main.py
 
 test: venv
+	. venv/bin/activate
 	FLASK_APP=$(APP_NAME) SQREEN_APP_NAME=$(APP_NAME) FLASK_ENV=testing tox
 
-sdist: venv test
-	venv/bin/python setup.py sdist
+package: venv test
+	venv/bin/python setup.py sdist bdist_wheel
 
 docker-cmd: deps
 	FLASK_APP=$(APP_NAME) SQREEN_APP_NAME=$(APP_NAME) FLASK_ENV=docker python main.py

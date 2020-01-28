@@ -1,72 +1,46 @@
 # sqreened-app
 
-sqreened-app description
+sqreened-app is a Flask + Celery app for processing webhooks from sqreen backend (https://docs.sqreen.com/integrations/webhooks/)
 
-## App Design
+It supports currently 2 backends : HTTP endpoint & Logging
 
-- Configure targets via config file
-- Generic config for target: types of notification to dispatch, fields to include in the dispatch, message parser to dispatch
-- Specific config for target: files (log) http endpoint
-- Config structure : Handlers (email/slack/log/sms with specific config)
-- Config structure : formatter (fields to use for dispatch)
-- Config structure : dispatcher (message_types -> [(handlers, formatter),...])
-- Expose /webhooks endpoint
-- Check signature in middleware/pre-request hook
-- Given config, instantiate proper Taskbackend & delay_async
+You can via a configuration (inspired by how the python logging module is configured)
+select which message types/events/event kinds are dispatched to.
 
+You can find an example of configuration in `sqreened_app/default_config.py`.
+This example dispatch all message of type `security_event` with the category `authentication` to a log file (so all event kind will be logged) and all message of type `security_event` with the category `authentication` and the event kind `auth_new_location` to an http backend.
+
+All fields are well documented in comments.
+
+The app use standard Flask configuration, you can override `sqreened_app/default_config.py` via the `FLASK_CONFIG` env variable pointing to your own config.py
 
 ## Quick Start
 
-Run the application:
+Run the all application: (make sure you have docker & docker-compose installed on your system):
 
-    make run
+    docker-compose up -d
 
-And open it in the browser at [http://127.0.0.1:5000/](http://127.0.0.1:5000/)
+You can test the API on http://localhost:5000/webhooks/
 
+## Development
 
-## Prerequisites
+Use the Makefile to setup your dev env.
+Make sure you have a fonctionning `make` on your system, and install virtualenv :
+`pip install virtualenv`
 
-This is built to be used with Python 3. Update `Makefile` to switch to Python 2 if needed.
+Setup your env : `make venv`
 
-Some Flask dependencies are compiled during installation, so `gcc` and Python header files need to be present.
-For example, on Ubuntu:
+Run the API locally: `make run`
 
-    apt install build-essential python3-dev
+Run the tests suite : `make test`
 
+Make a python package (wheel) : `make package`
 
-## Development environment and release process
+the `main.py`  at the project root provide a uwsgi callable `app`
 
- - create virtualenv with Flask and sqreened-app installed into it (latter is installed in
-   [develop mode](http://setuptools.readthedocs.io/en/latest/setuptools.html#development-mode) which allows
-   modifying source code directly without a need to re-install the app): `make venv`
+## TODO
+- Validate JSON schema for the `webhooks/` endpoint.
+- Increase coverage with different configurations setups
+- Track task status using celery result backend & local DB
+- Add target backend (SMS, slack ?)
 
- - run development server in debug mode: `make run`; Flask will restart if source code is modified
-
- - run tests: `make test` (see also: [Testing Flask Applications](http://flask.pocoo.org/docs/0.12/testing/))
-
- - create source distribution: `make sdist` (will run tests first)
-
- - to remove virtualenv and built distributions: `make clean`
-
- - to add more python dependencies: add to `install_requires` in `setup.py`
-
- - to modify configuration in development environment: edit file `settings.cfg`; this is a local configuration file
-   and it is *ignored* by Git - make sure to put a proper configuration file to a production environment when
-   deploying
-
-
-## Deployment
-
-If you are interested in an out-of-the-box deployment automation, check out accompanying
-[`cookiecutter-flask-ansible`](https://github.com/candidtim/cookiecutter-flask-ansible).
-
-Or, check out [Deploying with Fabric](http://flask.pocoo.org/docs/0.12/patterns/fabric/#fabric-deployment) on one of the
-possible ways to automate the deployment.
-
-In either case, generally the idea is to build a package (`make sdist`), deliver it to a server (`scp ...`),
-install it (`pip install sqreened_app.tar.gz`), ensure that configuration file exists and
-`SQREENED_APP_SETTINGS` environment variable points to it, ensure that user has access to the
-working directory to create and write log files in it, and finally run a
-[WSGI container](http://flask.pocoo.org/docs/0.12/deploying/wsgi-standalone/) with the application.
-And, most likely, it will also run behind a
-[reverse proxy](http://flask.pocoo.org/docs/0.12/deploying/wsgi-standalone/#proxy-setups).
